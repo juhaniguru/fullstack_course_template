@@ -59,9 +59,10 @@ app.include_router(location_controller.router)
 app.include_router(environment_controller.router)
 app.include_router(inspection_target_controller.router)
 
+models.metadata.create_all(bind=models.engine)
+
 if __name__ == '__main__':
 
-    models.metadata.create_all(bind=models.engine)
 
     if os.getenv('SSL') == '0':
         uvicorn.run('main:app', port=8002, reload=False)
