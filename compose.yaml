@@ -14,67 +14,47 @@
 #    ports:
 #      - 8000:8000
 
+version: '3.8'
+
 services:
   db:
-      image: mysql:latest
-      restart: always
-      environment:
-        MYSQL_ROOT_PASSWORD: salasana
-      ports:
-        - 3306:3306
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: fullstack3002mvp
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
 
   phpmyadmin:
     image: phpmyadmin
     restart: always
     ports:
-      - 8080:80
+      - "8080:80"
     environment:
-      - PMA_ARBITRARY=1
-      
+      PMA_ARBITRARY: 1
+      PMA_HOST: db
+    depends_on:
+      - db
+
   server:
     build:
       context: .
     ports:
-      - 8000:8000
+      - "8000:8000"
     environment:
-      - JWT_SECRET=sdflkfsdjdsflkjdsflkfsjsdflkjsdfoi23oij32k2l34jh234k
-      - JWT_TYPE=asymmetric
-      - SSL=0
-      - AUTH_TYPE=token
-      - CONNECTION_STRING=mysql+mysqlconnector://root:salasana@127.0.0.1/fullstack3002mvp
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_TYPE: asymmetric
+      SSL: "0"
+      AUTH_TYPE: token
+      CONNECTION_STRING: mysql+mysqlconnector://root:${MYSQL_ROOT_PASSWORD}@db/fullstack3002mvp
+    depends_on:
+      - db
+
+volumes:
+  db-data: 
 
   
-
-# The commented out section below is an example of how to define a PostgreSQL
-# database that your application can use. `depends_on` tells Docker Compose to
-# start the database before your application. The `db-data` volume persists the
-# database data between container restarts. The `db-password` secret is used
-# to set the database password. You must create `db/password.txt` and add
-# a password of your choosing to it before running `docker compose up`.
-#     depends_on:
-#       db:
-#         condition: service_healthy
-#   db:
-#     image: postgres
-#     restart: always
-#     user: postgres
-#     secrets:
-#       - db-password
-#     volumes:
-#       - db-data:/var/lib/postgresql/data
-#     environment:
-#       - POSTGRES_DB=example
-#       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-#     expose:
-#       - 5432
-#     healthcheck:
-#       test: [ "CMD", "pg_isready" ]
-#       interval: 10s
-#       timeout: 5s
-#       retries: 5
-# volumes:
-#   db-data:
-# secrets:
-#   db-password:
-#     file: db/password.txt
 
