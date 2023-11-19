@@ -9,7 +9,7 @@ from starlette.responses import Response
 
 import fullstack_token.token
 import models
-from dependencies import LoggedInUser, AuthRes, get_refresh_token_user
+from dependencies import LoggedInUser, AuthRes, get_refresh_token_user, Admin, Staff
 from dtos.auth import UserRegisterReq, UserRegisterRes, UserLoginRes, UserAccountRes, SessionData
 from fullstack_token.session import backend, cookie, verifier
 from services.auth_sqlalchemy import AuthService, AuthServ
@@ -20,6 +20,16 @@ router = APIRouter(
 )
 
 LoginForm = Annotated[OAuth2PasswordRequestForm, Depends()]
+
+
+@router.get('/account/admin', dependencies=[Depends(cookie)], response_model=UserAccountRes)
+async def get_admin(account: Admin):
+    return account
+
+
+@router.get('/account/staff', dependencies=[Depends(cookie)], response_model=UserAccountRes)
+async def get_staff(account: Staff):
+    return account
 
 
 @router.get('/account', dependencies=[Depends(cookie)], response_model=UserAccountRes)

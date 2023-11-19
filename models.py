@@ -19,11 +19,11 @@ SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 
 def get_db():
     db = SessionLocal()
-    print("###############open")
+
     try:
         yield db
     finally:
-        print("####################clsoe")
+
         db.close()
 
 
