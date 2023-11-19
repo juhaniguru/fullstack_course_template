@@ -10,8 +10,10 @@ from starlette.responses import JSONResponse
 import fullstack_token.token
 import models
 
+from fastapi.staticfiles import StaticFiles
+
 from controllers import auth_controller, user_controller, location_controller, environment_controller, \
-    inspection_target_controller
+    inspection_target_controller, inspection_form_controller
 from dotenv import load_dotenv
 
 # https://www.section.io/engineering-education/how-to-get-ssl-https-for-localhost/?fbclid=IwAR1uk5NY4TTLg4MpnMMwYMLB6hB7tjjkBlcvAzZhAjyuybhlcNa3o1eRPZ8
@@ -52,12 +54,14 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-
 app.include_router(auth_controller.router)
 app.include_router(user_controller.router)
 app.include_router(location_controller.router)
 app.include_router(environment_controller.router)
 app.include_router(inspection_target_controller.router)
+app.include_router(inspection_form_controller.router)
+
+app.mount("/", StaticFiles(directory="static"), name="static")
 
 if __name__ == '__main__':
 
