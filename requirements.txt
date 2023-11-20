@@ -8,6 +8,5 @@ pyJWT[crypto]
 python-multipart
 fastapi-sessions
 alembic
-psycopg2
 python-dotenv
 requests
