@@ -19,11 +19,11 @@ SessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 
 def get_db():
     db = SessionLocal()
-    print("###############open")
+
     try:
         yield db
     finally:
-        print("####################clsoe")
+
         db.close()
 
 
@@ -109,6 +109,17 @@ t_userresponsibleenvironment = Table(
 )
 
 
+class File(Base):
+    __tablename__ = 'file'
+    id = Column(Integer, primary_key=True)
+    original_name = Column(String(255), nullable=False)
+    random_name = Column(String(255), nullable=False, index=True)
+    inspectionform_id = Column(ForeignKey('inspectionform.id'), nullable=False, index=True)
+
+    inspectionform = relationship('Inspectionform')
+
+
+
 class Inspectionform(Base):
     __tablename__ = 'inspectionform'
 
@@ -124,6 +135,8 @@ class Inspectionform(Base):
     inspectiontarget = relationship('Inspectiontarget')
     inspectiontype = relationship('Inspectiontype')
     user = relationship('User')
+
+    files = relationship('File')
 
 
 class Instruction(Base):

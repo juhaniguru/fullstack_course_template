@@ -132,5 +132,27 @@ def get_logged_in_user(_token: Token, service: AuthServ, account_handler: Accoun
     return account_handler.verify(_token, service, authorization, access_token_cookie, _cookie)
 
 
+def require_admin(_token: Token, service: AuthServ, account_handler: AccountHandler,
+                  authorization: Annotated[Optional[str], Depends(oauth_scheme)] = None,
+                  access_token_cookie: Annotated[Optional[str], Cookie()] = None,
+                  _cookie: Annotated[Optional[SessionData], Depends(verifier)] = None):
+    user = account_handler.verify(_token, service, authorization, access_token_cookie, _cookie)
+    if user.role != 'admin':
+        raise HTTPException(status_code=403, detail='forbidden')
+    return user
+
+
+def require_staff(_token: Token, service: AuthServ, account_handler: AccountHandler,
+                  authorization: Annotated[Optional[str], Depends(oauth_scheme)] = None,
+                  access_token_cookie: Annotated[Optional[str], Cookie()] = None,
+                  _cookie: Annotated[Optional[SessionData], Depends(verifier)] = None):
+    user = account_handler.verify(_token, service, authorization, access_token_cookie, _cookie)
+    if user.role == 'admin' or user.role == 'staff':
+        return user
+    raise HTTPException(status_code=403, detail='forbidden')
+
+
 LoggedInUser = Annotated[models.User, Depends(get_logged_in_user)]
+Admin = Annotated[models.User, Depends(require_admin)]
+Staff = Annotated[models.User, Depends(require_staff)]
 AuthRes = Annotated[AuthResponseHandlerBase, Depends(init_auth_res)]
