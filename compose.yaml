@@ -45,6 +45,7 @@ services:
     ports:
       - "8000:8000"
     environment:
+      SSL: 0
       JWT_SECRET: ${JWT_SECRET}
       JWT_TYPE: asymmetric
       AUTH_TYPE: token
