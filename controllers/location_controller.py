@@ -25,12 +25,12 @@ async def get_all_locations(location_service: LocationServ):
 
 
 @router.post('/', response_model=AddNewLocationRes)
-# should be in a service
-async def add_new_location(req: AddNewLocationReq, ):
-    location = models.Location(**req.model_dump())
-    # location = models.Location(name=req.name, address=req.address, zip_code=req.zip_code)
-
-    db.add(location)
-    db.commit()
+async def add_new_location(req: AddNewLocationReq, location_service: LocationServ):
+    
+    location = location_service.add(req)
 
     return location
+
+@router.get('/{id}', response_model=AddNewLocationRes)
+async def get_location_by_id(id:int, location_service: LocationServ):
+    return location_service.get_by_id(id)
